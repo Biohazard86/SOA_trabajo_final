@@ -6,6 +6,9 @@ import random
 import math # cos() for Rastrigin
 import copy # array-copying convenience
 import sys	 # max float
+#Para el tratamiento de imagenes:
+import numpy as np
+from PIL import Image
 
 
 #-------fitness functions---------
@@ -44,6 +47,8 @@ class wolf:
 # grey wolf optimization (GWO)
 def gwo(fitness, max_iter, n, dim, minx, maxx):
 	rnd = random.Random(0)
+
+    #Aqu'i se inserta la imagen en vez de generar los lobos de forma aleatoria
 
 	# create n random wolves
 	population = [ wolf(fitness, dim, minx, maxx, i) for i in range(n)]
@@ -114,6 +119,42 @@ def gwo(fitness, max_iter, n, dim, minx, maxx):
 	return alpha_wolf.position
 		
 #----------------------------
+#----------------------------
+#----------------------------
+#----------------------------
+
+
+#Abrimos la imagen y la pasamos a una matriz
+img = Image.open('test.png').convert('RGBA')    # la abrimos en modo RGBA
+img = img.convert('RGB')    # la convertimos a RGB para no tener el canal alfa, el cuarto elemento de la tupla
+arr = np.array(img)
+
+# Guardamos la dimension de la imagen. Tendra una dimension de x,y,3
+dim = arr.shape
+
+#operaciones>>>
+
+
+
+
+#Esto va al final, cuando hayamos realizado las operaciones:
+#Generamos un array de una sola dimension
+flat_arr = arr.ravel()
+
+# convert it to a matrix
+vector = np.matrix(flat_arr)
+
+
+# devolvemos el array a su posicion original
+arr2 = np.asarray(vector).reshape(dim)
+
+# Volvemos a generar la imagen
+img2 = Image.fromarray(arr2, 'RGB') #pasamos el array 2 a una imagen en formato RGB
+#img2.save('resultado.png')  # asi la guardamos
+img2.show()             # y la mostramos
+
+
+
 
 
 # Driver code for rastrigin function
@@ -183,3 +224,4 @@ err = fitness(best_position)
 print("fitness of best solution = %.6f" % err)
 
 print("\nEnd GWO for sphere\n")
+
