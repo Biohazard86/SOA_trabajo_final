@@ -15,8 +15,10 @@ import array  #para trabajar con arrays
 import random #para numeros aleatorios
 from calculo_mse import mse
 from operator import attrgetter #Para ordenar las particulas
+import json
+import base64
+from json import dumps
 #------------------------------------------------------------
-
 class Rana:
     def __init__(self, num_colores):
         # POSICION DE LA PARTICULA -> creo el array y doy valor inicial
@@ -247,8 +249,21 @@ class SLF:
         res = center[label.flatten()]
         res2 = res.reshape((FIG1.shape))
 
-        figu2='RESULTADO.tif'
+        figu2='RESULTADO.tiff'
         cv2.imwrite(figu2,res2)
+        #data_send = {}
+        #data_send['img'] = base64.b64encode(figu2)
+
+        #la imagen que hemos obtenido la codificamos en base64
+        data = open('RESULTADO.tiff', 'rb').read()
+        bytes_base64 = base64.b64encode(data)
+        base64_string = bytes_base64.decode('latin1')
+        #La guardamos en jsaon_data que sea un JSON que enviara la imagen final que genera el servicio
+        json_data = dumps(base64_string, indent=2)
+        #print(json_data)
+
+
+        #print(json.dumps(bytes_base64))
         
 #--------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -259,8 +274,25 @@ if __name__ == '__main__':
     print ('EJECUCION: python image_reduce.py <imagen>')
 
     #Si he pasado un argumento desde el terminal al ejecutar el programa, lo tomo como nombre de la imagen
+    
+    # Transformaremos la img para simular el JSON que recibe el servicio
+    data = open('snowman.tiff', 'rb').read()
+    bytes_base64 = base64.b64encode(data)  
+    
+    base64_string = bytes_base64.decode('latin1')
+    
+    json_recibido = dumps(base64_string, indent=2)
+    #print(json_recibido)
+    #print("\n++++++++\n")
 
-    figura1='snowman.tif'
+
+
+    #El JSON que hemos recibido en b64 lo guardamos en una var que la decodificamos creando la img temporal
+    json_figura = base64.b64decode(json_recibido)
+    with open('temp.tiff', 'wb') as f:
+        f.write(json_figura)
+    figura1='temp.tiff'
+    
 
     #Informo al usuario del fichero que voy a procesar
     print("procesando la imagen: |"+ figura1 + "|" )
